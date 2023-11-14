@@ -103,3 +103,109 @@ for modGr in modifiedGrades:
   if modGr >= 80 and modGr <= 89:
     letterGrades.append("B")
 print("Letter Grades: " + str(letterGrades))
+
+# Read csv file & Analyze data
+import csv
+
+list_sales_data = []
+
+
+def read_sales_data(file_path):
+  with open(file_path, mode='r', newline='', encoding='utf-8') as csv_file:
+    csv_reader = csv.DictReader(csv_file)
+    for row in csv_reader:
+      for k, v in row.items():
+        if not v:
+          if k == "Price" or k == "Quantity":
+            row[k] = 0
+          elif k == "Category" or k == "Product":
+            row[k] = "N/A"
+      list_sales_data.append(row)
+
+
+read_sales_data("sales_data.csv")
+print("The first five rows of Sales data are: \n" + str(list_sales_data[0:5]) +
+      "\n")
+
+
+def calculate_total_sales(list):
+  total_sales = 0
+  price_times_quantity = 0
+  for x in list:
+    for y in x:
+      price_times_quantity = int(x["Price"]) * int(x["Quantity"])
+    total_sales += price_times_quantity
+
+  print("The Total Sales of all the Products is: $" + str(total_sales) + "\n")
+
+
+calculate_total_sales(list_sales_data)
+
+analysis_data = {}
+
+
+def category_analysis_helper(list, category):
+  average_price = int(0)
+  category_length = []
+  price_times_quantity = 0
+  total_sales = 0
+  for x in list:
+    for y in x:
+      if y == "Price" and x["Category"] == category:
+        category_length.append(y)
+        average_price += int(x["Price"])
+        price_times_quantity = int(x["Price"]) * int(x["Quantity"])
+        total_sales += price_times_quantity
+        analysis_data[category] = [average_price, total_sales]
+
+  average_price = average_price / len(category_length)
+  average_price = format(average_price, ".2f")
+  total_sales = format(total_sales, ".2f")
+  print("Average Price of " + category + " is: $" + str(average_price))
+  print("Total Sales of " + category + " is: $" + str(total_sales) + "\n")
+
+
+category_list = [
+    "Electronics", "Accessories", "Appliances", "Footwear", "Apparel", "Art",
+    "Furniture", "Books"
+]
+
+
+def category_analysis(list):
+  for x in list:
+    category_analysis_helper(list_sales_data, x)
+
+
+category_analysis(category_list)
+
+
+def bestselling_product(list):
+  best_seller = 0
+  product_name = ""
+  for x in list:
+    if int(x["Quantity"]) > int(best_seller):
+      best_seller = x["Quantity"]
+      product_name = str(x["Product"])
+
+  print("The Best Selling Product is " + str(product_name) + "\n")
+
+
+bestselling_product(list_sales_data)
+
+
+def sales_recommendations(data):
+  least_units_sold = float("inf")
+  category_name = ""
+  for category in category_list:
+    (data[category])
+    units_sold = data[category][1] / data[category][0]
+    if units_sold < least_units_sold:
+      least_units_sold = units_sold
+      category_name = category
+
+  print(f"The category with the lowest sales is the {category_name} category"
+        f" this category only sold {least_units_sold} unit(s), consider"
+        " lowering the price")
+
+
+sales_recommendations(analysis_data)
